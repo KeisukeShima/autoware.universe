@@ -115,6 +115,12 @@ jobs:
         shell: bash
         # ---
 
+      - name: Install python package for coverage commands
+        run: |
+          pip3 install colcon-lcov-result
+          pip3 install colcon-coveragepy-result
+        shell: bash
+
       - name: Run test with coverage flags
         run: |
           . /opt/ros/galactic/setup.sh
