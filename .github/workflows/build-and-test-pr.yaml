@@ -126,8 +126,7 @@ jobs:
           . /opt/ros/galactic/setup.sh
           colcon lcov-result --zero-counters --lcov-config-file .lcovrc --lcov-base lcov
           colcon lcov-result --initial --lcov-config-file .lcovrc --lcov-base lcov
-          colcon test --event-handlers console_cohesion+ \
-            --return-code-on-test-failure
+          colcon test --event-handlers console_cohesion+
           colcon lcov-result --verbose --lcov-config-file .lcovrc --lcov-base lcov
           colcon coveragepy-result --verbose --coverage-report-args -m --coveragepy-base coveragepy
         shell: bash
