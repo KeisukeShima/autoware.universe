@@ -66,3 +66,69 @@ jobs:
           target-packages: ${{ steps.get-modified-packages.outputs.modified-packages }}
           clang-tidy-config-url: https://raw.githubusercontent.com/autowarefoundation/autoware/tier4/proposal/.clang-tidy
           build-depends-repos: build_depends.repos
+
+  codecov:
+    runs-on: ubuntu-latest
+    container: ros:galactic
+    needs: build-and-test
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Remove exec_depend
+        uses: autowarefoundation/autoware-github-actions/remove-exec-depend@tier4/proposal
+
+      - name: Register AutonomouStuff repository
+        uses: autowarefoundation/autoware-github-actions/register-autonomoustuff-repository@tier4/proposal
+        with:
+          rosdistro: galactic
+
+      # Copied from autoware-github-actions/build-and-test@tier4/proposal
+      - name: Install pip for rosdep
+        run: |
+          sudo apt-get -yqq update
+          sudo apt-get -yqq install python3-pip
+        shell: bash
+
+      - name: Clone dependency packages
+        run: |
+          git config --local --unset-all http.https://github.com/.extraheader || true
+          git config --global url.https://x-access-token:@github.com.insteadOf 'https://github.com'
+          mkdir dependency_ws
+          vcs import dependency_ws < build_depends.repos
+        shell: bash
+
+      - name: Run rosdep install
+        run: |
+          sudo apt-get -yqq update
+          rosdep update
+          DEBIAN_FRONTEND=noninteractive rosdep install -yqq --from-paths . --ignore-src --rosdistro galactic
+        shell: bash
+
+      - name: Build
+        run: |
+          . /opt/ros/galactic/setup.sh
+          colcon build --event-handlers console_cohesion+ \
+            --cmake-args -DCMAKE_CXX_FLAGS="-fprofile-arcs -ftest-coverage -DCOVERAGE_RUN=1" -DCMAKE_C_FLAGS="-fprofile-arcs -ftest-coverage -DCOVERAGE_RUN=1" -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+        shell: bash
+        # ---
+
+      - name: Run test with coverage flags
+        run: |
+          . /opt/ros/galactic/setup.sh
+          colcon lcov-result --zero-counters --lcov-config-file .lcovrc --lcov-base lcov
+          colcon lcov-result --initial --lcov-config-file .lcovrc --lcov-base lcov
+          colcon test --event-handlers console_cohesion+ \
+            --return-code-on-test-failure
+          colcon lcov-result --verbose --lcov-config-file .lcovrc --lcov-base lcov
+          colcon coveragepy-result --verbose --coverage-report-args -m --coveragepy-base coveragepy
+        shell: bash
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v2
+        with:
+          files: lcov/total_coverage.info,coveragepy/.coverage
+          fail_ci_if_error: true
+          verbose: true
