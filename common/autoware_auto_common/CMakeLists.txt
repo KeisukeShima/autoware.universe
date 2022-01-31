@@ -53,6 +53,7 @@ if(BUILD_TESTING)
   ament_uncrustify(${FILES_MINUS_SOME})
 
   # Unit tests
+  # test: add dummy comment
   set(TEST_COMMON test_common_gtest)
   ament_add_gtest(${TEST_COMMON}
           test/gtest_main.cpp
