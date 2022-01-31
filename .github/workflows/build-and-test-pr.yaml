@@ -30,11 +30,12 @@ jobs:
 
       - name: Build and test
         if: ${{ steps.get-modified-packages.outputs.modified-packages != '' }}
-        uses: autowarefoundation/autoware-github-actions/colcon-build-and-test@tier4/proposal
+        uses: KeisukeShima/autoware-github-actions/colcon-build-and-test@feature/coverage-flags
         with:
           rosdistro: galactic
           target-packages: ${{ steps.get-modified-packages.outputs.modified-packages }}
           build-depends-repos: build_depends.repos
+          test-label: gtest
 
       - name: Upload coverage to Codecov
         if: ${{ steps.get-modified-packages.outputs.modified-packages != '' }}
@@ -43,6 +44,7 @@ jobs:
           files: lcov/total_coverage.info,coveragepy/.coverage
           fail_ci_if_error: false
           verbose: true
+          flags: gtest
 
   clang-tidy:
     runs-on: ubuntu-latest
