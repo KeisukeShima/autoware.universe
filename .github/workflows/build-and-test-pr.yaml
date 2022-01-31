@@ -46,6 +46,24 @@ jobs:
           verbose: true
           flags: gtest
 
+      - name: Build and test
+        if: ${{ steps.get-modified-packages.outputs.modified-packages != '' }}
+        uses: KeisukeShima/autoware-github-actions/colcon-build-and-test@feature/coverage-flags
+        with:
+          rosdistro: galactic
+          target-packages: ${{ steps.get-modified-packages.outputs.modified-packages }}
+          build-depends-repos: build_depends.repos
+          test-label: smoke_test
+
+      - name: Upload coverage to Codecov
+        if: ${{ steps.get-modified-packages.outputs.modified-packages != '' }}
+        uses: codecov/codecov-action@v2
+        with:
+          files: lcov/total_coverage.info,coveragepy/.coverage
+          fail_ci_if_error: false
+          verbose: true
+          flags: smoke_test
+
   clang-tidy:
     runs-on: ubuntu-latest
     container: ros:galactic

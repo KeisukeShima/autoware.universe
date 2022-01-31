@@ -43,4 +43,9 @@ function(add_smoke_test package_name executable_name)
     ARGS "${ARGUMENTS}"
     TIMEOUT "30"
   )
+  set_tests_properties(
+    "${executable_name}_smoke_test"
+    PROPERTIES
+    LABELS "smoke_test"
+  )
 endfunction()
