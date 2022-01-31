@@ -36,6 +36,12 @@ jobs:
           target-packages: ${{ steps.get-modified-packages.outputs.modified-packages }}
           build-depends-repos: build_depends.repos
 
+      - name: Check results
+        run: |
+          ls -l
+          find . -name coverage.info
+          find . -name total_coverage.info
+
       - name: Upload coverage to Codecov
         if: ${{ steps.get-modified-packages.outputs.modified-packages != '' }}
         uses: codecov/codecov-action@v2
