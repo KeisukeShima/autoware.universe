@@ -7,6 +7,10 @@ jobs:
   build-and-test:
     runs-on: ubuntu-latest
     container: ros:galactic
+    strategy:
+      matrix:
+        label: [gtest, smoke_test]
+
     steps:
       - name: Cancel previous runs
         uses: styfle/cancel-workflow-action@0.9.1
@@ -36,21 +40,29 @@ jobs:
           rosdistro: galactic
           target-packages: ${{ steps.get-modified-packages.outputs.modified-packages }}
           build-depends-repos: build_depends.repos
-          test-labels: gtest,smoke_test
+
+      - name: Labeled test
+        id: labeled-test
+        if: ${{ steps.get-modified-packages.outputs.modified-packages != '' }}
+        uses: KeisukeShima/autoware-github-actions/colcon-labeled-test@feature/coverage-flags
+        with:
+          rosdistro: galactic
+          target-packages: ${{ steps.get-modified-packages.outputs.modified-packages }}
+          label: ${{ matrix.label }}
 
       - name: Check files
         run: |
           ls -l
-          echo ${{ steps.build-and-test.outputs.coverage-files }}
+          echo ${{ steps.labeled-test.outputs.coverage-reports }}
 
       - name: Upload coverage to Codecov
-        if: ${{ steps.get-modified-packages.outputs.modified-packages != '' }}
+        if: ${{ steps.labeled-test.outputs.coverage-reports != '' }}
         uses: codecov/codecov-action@v2
         with:
-          files: ${{ steps.build-and-test.outputs.coverage-files }}
-          fail_ci_if_error: false
+          files: ${{ steps.labeled-test.outputs.coverage-reports }}
+          fail_ci_if_error: true
           verbose: true
-          flags: gtest,smoke_test
+          flags: ${{ matrix.label }}
 
   clang-tidy:
     runs-on: ubuntu-latest
