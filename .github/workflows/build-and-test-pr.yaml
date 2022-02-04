@@ -4,7 +4,7 @@ on:
   pull_request:
 
 jobs:
-  build-and-test:
+  build:
     runs-on: ubuntu-latest
     container: ros:galactic
     steps:
@@ -28,10 +28,17 @@ jobs:
         id: get-modified-packages
         uses: autowarefoundation/autoware-github-actions/get-modified-packages@tier4/proposal
 
-      - name: Build and test
-        id: build-and-test
+      - name: Build
         if: ${{ steps.get-modified-packages.outputs.modified-packages != '' }}
-        uses: KeisukeShima/autoware-github-actions/colcon-build-and-test@feature/coverage-flags
+        uses: KeisukeShima/autoware-github-actions/colcon-build@feature/coverage-flags
+        with:
+          rosdistro: galactic
+          target-packages: ${{ steps.get-modified-packages.outputs.modified-packages }}
+          build-depends-repos: build_depends.repos
+
+      - name: Test
+        if: ${{ steps.get-modified-packages.outputs.modified-packages != '' }}
+        uses: KeisukeShima/autoware-github-actions/colcon-test@feature/coverage-flags
         with:
           rosdistro: galactic
           target-packages: ${{ steps.get-modified-packages.outputs.modified-packages }}
@@ -40,7 +47,7 @@ jobs:
   labeled-test:
     runs-on: ubuntu-latest
     container: ros:galactic
-    needs: build-and-test
+    needs: build
     strategy:
       matrix:
         label: [gtest, smoke_test]
@@ -66,7 +73,7 @@ jobs:
       - name: Labeled test
         id: labeled-test
         if: ${{ steps.get-modified-packages.outputs.modified-packages != '' }}
-        uses: KeisukeShima/autoware-github-actions/colcon-labeled-test@feature/coverage-flags
+        uses: KeisukeShima/autoware-github-actions/colcon-test@feature/coverage-flags
         with:
           rosdistro: galactic
           target-packages: ${{ steps.get-modified-packages.outputs.modified-packages }}
@@ -90,7 +97,7 @@ jobs:
   clang-tidy:
     runs-on: ubuntu-latest
     container: ros:galactic
-    needs: build-and-test
+    needs: build
     steps:
       - name: Check out repository
         uses: actions/checkout@v2
