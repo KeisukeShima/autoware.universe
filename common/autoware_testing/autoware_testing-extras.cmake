@@ -15,3 +15,4 @@
 find_package(ros_testing REQUIRED)
 
 include("${autoware_testing_DIR}/add_smoke_test.cmake")
+include("${autoware_testing_DIR}/add_interface_test.cmake")

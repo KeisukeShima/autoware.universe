@@ -1,0 +1,5 @@
+input_topics:
+  - autoware_auto_control_msgs/msg/AckermannLateralCommand
+  - autoware_auto_control_msgs/msg/LongitudinalCommand
+output_topics:
+  - autoware_auto_control_msgs/msg/AckermannControlCommand
