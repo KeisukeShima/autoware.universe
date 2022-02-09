@@ -22,6 +22,9 @@ comment:
 ignore:
   - "**/test"
 
+fixes:
+  - "autoware.universe/::"
+
 flag_management:
   default_rules:
     carryforward: true
