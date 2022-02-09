@@ -50,3 +50,9 @@ jobs:
           files: lcov/total_coverage.info,coveragepy/.coverage
           fail_ci_if_error: false
           verbose: true
+
+      - name: Save lcov
+        uses: actions/upload-artifact@v2
+        with:
+          name: lcov
+          path: lcov
