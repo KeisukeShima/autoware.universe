@@ -47,7 +47,7 @@ void update_param(
     value = static_cast<T>(it->template get_value<T>());
   }
 }
-}  // namespace
+}  // namespace tmp
 
 LateralController::LateralController(const rclcpp::NodeOptions & node_options)
 : Node("lateral_controller", node_options)
