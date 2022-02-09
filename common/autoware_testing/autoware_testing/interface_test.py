@@ -31,7 +31,7 @@ import shlex
 
 
 def resolve_node(context, *args, **kwargs):
-    smoke_test_node = Node(
+    interface_test_node = Node(
         package=LaunchConfiguration('arg_package'),
         executable=LaunchConfiguration('arg_package_exe'),
         namespace='test',
@@ -44,7 +44,7 @@ def resolve_node(context, *args, **kwargs):
         ],
         arguments=shlex.split(LaunchConfiguration('arg_executable_arguments').perform(context))
     )
-    return [smoke_test_node]
+    return [interface_test_node]
 
 
 @pytest.mark.launch_test
