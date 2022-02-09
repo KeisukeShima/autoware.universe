@@ -23,7 +23,7 @@ ignore:
   - "**/test"
 
 fixes:
-  - "autoware.universe/::"
+  - "autoware.universe/*/trajectory_follower_nodes/::"
 
 flag_management:
   default_rules:
