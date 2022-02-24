@@ -33,7 +33,7 @@ jobs:
       - name: Test
         if: ${{ steps.get-self-packages.outputs.self-packages != '' }}
         id: test
-        uses: autowarefoundation/autoware-github-actions/colcon-test@tier4/proposal
+        uses: KeisukeShima/autoware-github-actions/colcon-test@feat/sequential-test
         with:
           rosdistro: galactic
           target-packages: ${{ steps.get-self-packages.outputs.self-packages }}
