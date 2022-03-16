@@ -69,6 +69,10 @@ void FaultInjectionNode::onSimulationEvents(const SimulationEvents::ConstSharedP
   for (const auto & event : msg->fault_injection_events) {
     if (diagnostic_storage_.isEventRegistered(event.name)) {
       diagnostic_storage_.updateLevel(event.name, event.level);
+    } else {
+      RCLCPP_WARN(
+        // Dummy change
+        this->get_logger(), "Event %s is not registered", event.name.c_str());
     }
   }
 }
