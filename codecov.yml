@@ -4,3 +4,5 @@ coverage:
       default:
         target: auto
         only_pulls: true
+codecov:
+  branch: test/codecov-yaml2
