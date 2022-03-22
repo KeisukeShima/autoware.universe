@@ -3,9 +3,13 @@ coverage:
     project:
       default:
         target: auto
+        flags:
+          - total
     patch:
       default:
         only_pulls: true
+        flags:
+          - total
 
 flags:
   total:
