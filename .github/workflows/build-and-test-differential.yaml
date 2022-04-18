@@ -19,7 +19,9 @@ jobs:
       - name: Remove exec_depend
         uses: autowarefoundation/autoware-github-actions/remove-exec-depend@v1
 
-      - run: echo $PWD
+      - run: |
+          echo $PWD
+          ls -la
 
       - name: Get modified packages
         id: get-modified-packages
